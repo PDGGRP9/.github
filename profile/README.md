@@ -100,46 +100,10 @@ Pour un usage réel en tant que bracelet porté au quotidien, le BLE reste néan
 
 ---
 
-## 5. Diagramme de séquence
+## Architecture et flux de données
 
-### old
-```mermaid
-sequenceDiagram
-    participant C as Capteurs
-    participant B as Bracelet ESP32
-    participant A as App Android
-    participant DJ as Backend Django
-    participant D as DB PostgreSQL
-    participant F as Frontend Webapp
- 
-    C->>B: Signaux bruts
-    B->>B: Traitement embarqué (BPM, SpO2, signes physiologiques)
- 
-    B->>A: Notification BLE GATT (mesures traitées)
-    A->>A: Affichage local des mesures
- 
-    alt Envoi réussi
-        A->>DJ: Envoi mesures (API REST, WiFi/4G)
-        DJ->>D: Écriture données
-    else Échec réseau
-        A->>A: Mise en buffer local
-        A->>DJ: Retry envoi
-    end
- 
-    F->>DJ: Login (authentification)
-    DJ-->>F: Session/Token
- 
-    loop Pour chaque information consultée
-        F->>DJ: Requête API (métrique)
-        DJ->>D: Requête DB
-        D-->>DJ: Résultats
-        DJ-->>F: Réponse JSON
-        F->>F: Affichage graphique
-    end
-```
----
- 
-### Architecture bracelet connecté
+
+### Architecture du système
 
 ```mermaid
 graph TB
@@ -182,6 +146,45 @@ graph TB
     style PHONE fill:#EEEDFE,stroke:#534AB7,color:#26215C
     style BACKEND fill:#E6F1FB,stroke:#185FA5,color:#042C53
 ```
+
+### Diagramme de séquence
+
+```mermaid
+sequenceDiagram
+    participant C as Capteurs
+    participant B as Bracelet ESP32
+    participant A as App Android
+    participant DJ as Backend Django
+    participant D as DB PostgreSQL
+    participant F as Frontend Webapp
+ 
+    C->>B: Signaux bruts
+    B->>B: Traitement embarqué (BPM, SpO2, signes physiologiques)
+ 
+    B->>A: Notification BLE GATT (mesures traitées)
+    A->>A: Affichage local des mesures
+ 
+    alt Envoi réussi
+        A->>DJ: Envoi mesures (API REST, WiFi/4G)
+        DJ->>D: Écriture données
+    else Échec réseau
+        A->>A: Mise en buffer local
+        A->>DJ: Retry envoi
+    end
+ 
+    F->>DJ: Login (authentification)
+    DJ-->>F: Session/Token
+ 
+    loop Pour chaque information consultée
+        F->>DJ: Requête API (métrique)
+        DJ->>D: Requête DB
+        D-->>DJ: Résultats
+        DJ-->>F: Réponse JSON
+        F->>F: Affichage graphique
+    end
+```
+---
+ 
 
 
 
