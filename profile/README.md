@@ -14,11 +14,12 @@
 
 ### Qu'est-ce que c'est
 
-Un bracelet connecté sans écran, porté au poignet, qui mesure en continu des signaux physiologiques et d'activité de son porteur : battements par minute, oxymétrie (SpO2) et nombre de pas. Le bracelet ne fait qu'acquérir, traiter et transmettre les données. Toute la visualisation se fait sur l'app ou la webapp accessible depuis un navigateur.
+Un bracelet connecté sans écran, porté au poignet, qui mesure en continu des signaux physiologiques et d'activité de son porteur : rythme cardiaque, oxymétrie (SpO2) et nombre de pas. Le bracelet ne fait qu'acquérir et transmettre les données. Toute la visualisation se fait sur une application déployée sur Android ou alors dans la webapp d'un navigateur.
 
-Le produit se compose de deux parties :
-- **Le bracelet** : capte les signaux bruts, les traite et les envoie en Wi-Fi.
-- **L'app et la webapp** : reçoit les données, les stocke et les affiche à l'utilisateur sous forme de courbes et d'historique.
+Le produit se compose de trois parties:
+- **Le bracelet** (matériel) : Capte les signaux bruts, les traite et les envoie en BLE GATT au téléphone.
+- **L'application Android** (Logiciel) : Le téléphone reçoit les données depuis les capteurs et les stocke dans une DB. L'application permet également à l'utilisateur de visionner ses données (bpm, Spo2, pas) sous forme de courbe, moyenne sur une échelle de 24h à 7 jours d'historique
+- **La webapp** (logiciel) : L'application web possède les mêmes fonctionnalités de visionnage que l'application Android. Elle affiche au travers de graphiques les données de l'utilisateur. 
 
 ### À qui s'adresse-t-il
 
@@ -29,9 +30,9 @@ Toute personne souhaitant suivre ses constantes physiologiques au quotidien (spo
 - Il se porte au poignet en continu, sans nécessiter d'action de l'utilisateur.
 - Il mesure en continu le rythme cardiaque, la saturation en oxygène du sang via un capteur optique posé contre la peau.
 - Il détecte les mouvements du poignet pour compter les pas.
-- Il envoie ces données à une app android via BLE. 
+- Il envoie ces données par BLE GATT, à intervalle régulier (quelques secondes), vers le téléphone.
 - L'utilisateur peut mettre le bracelet en veille profonde avec un bouton
-- L'utilisateur se connecte à l'app et peut voir, en direct ou en différé, son rythme cardiaque, sa saturation en oxygène et son nombre de pas, ainsi que l'historique de ces mesures.
+- L'utilisateur se connecte à l'application Android ou à la webapp, en direct ou en différé, son rythme cardiaque, sa saturation en oxygène et son nombre de pas, ainsi que l'historique de ces mesures.
 - L'application est connectée à un server qui stoque ces données
 - L'utilisateur garde la main sur ses données : il peut les consulter, les exporter, ou les supprimer.
 
@@ -50,7 +51,33 @@ Toute personne souhaitant suivre ses constantes physiologiques au quotidien (spo
 | **XIAO ESP32S3** | Cerveau du bracelet : lit les capteurs, traite le signal et envoie les données en BLE |
 | **SEN0344 (DFRobot)** | Capteur optique posé contre la peau du poignet, utilisé pour mesurer le rythme cardiaque et l'oxymétrie (SpO2) |
 | **SEN0142 (DFRobot)** | Accéléromètre, détecte les mouvements du poignet pour le comptage de pas |
-| **Akyga LP753636** | Batterie 1000mAh, Alimente le bracelet fonctionne en continu |
+| **Batterie Lipo** | Alimentation autonome du bracelet |
+| **Bouton poussoir** | Mise en veille et allumage du dispositif |
+| **LED** | Indicateur visuel d'état |
+
+La liste détaillée des composants, des schémas et de la modélisation du dispositif est disponible à travers [ce lien](https://github.com/PDGGRP9/hardware).
+
+Le bracelet fonctionne en continu, alimenté par batterie, et communique uniquement en Wi-Fi (pas de Bluetooth dans cette version).
+
+> **Note sur le choix de connectivité :** Dans un premier temps, le Wi-Fi a été retenu pour cette version du prototype car il s'agit d'une technologie plus simple à mettre en place, nécessitant moins de connaissances spécifiques et facilitant l'intégration avec le broker et la webapp. Ce choix a notamment permis de limiter la complexité de développement dans le cadre du temps imparti au projet, une solution BLE ayant initialement semblé demander un développement d'application Android trop conséquent pour être réalisé dans les délais. <br> <br>
+Finalement, compte tenu du temps disponible, nous avons pu implémenter une application Android se connectant en BLE GATT, avec un affichage des données à la fois via l'application Android et via l'application web. <br> <br>
+Pour un usage réel en tant que bracelet porté au quotidien, le BLE reste néanmoins la technologie la plus adaptée : elle consomme beaucoup moins d'énergie que le Wi-Fi, ce qui permettrait d'augmenter significativement l'autonomie de la batterie, un critère que nous avons jugé essentiel pour un dispositif porté en continu.
+
+---
+
+## 3. Fonctionnement du produit, étape par étape
+
+1. **Le capteur cardiaque et d'oxymétrie (SEN0344)** est en contact avec la peau et utilise deux longueurs d'onde de lumière (rouge et infrarouge). Le sang oxygéné et désoxygéné n'absorbe pas la lumière de la même manière : le rapport entre les deux signaux permet d'estimer la saturation en oxygène (SpO2). La variation du signal réfléchi permet également de détecter chaque battement de cœur.
+
+2. **L'accéléromètre (SEN0142)** détecte les mouvements du bras, ce qui permet de compter les pas et d'aider à distinguer un vrai battement de cœur d'un artefact dû au mouvement.
+   
+3. **La carte ESP32S3** récupère ces données brutes, fait un premier nettoyage/traitement (le signal cardiaque brut est bruité), calcule le rythme cardiaque (BPM) et la SpO2, et expose régulièrement (toutes les 1 à 5 secondes) ce paquet de données via un service BLE GATT.
+   
+4. **L'application Android**, connectée en BLE au bracelet, reçoit ces données via GATT, les affiche localement à l'utilisateur, puis les transmet à un serveur backend via une connexion Internet (Wi-Fi ou données mobiles du téléphone).
+   
+5. **Le serveur backend** reçoit les données envoyées par l'application Android, les valide et les enregistre dans une base de données PostgreSQL.
+   
+6. **La webapp**, connectée au même backend, affiche à l'utilisateur, en quasi temps réel, son rythme cardiaque, son oxymétrie et son nombre de pas, avec la possibilité de consulter l'historique. Ces données restent également consultables directement depuis l'application Android.
 
 ---
 
@@ -80,20 +107,23 @@ Toute personne souhaitant suivre ses constantes physiologiques au quotidien (spo
 sequenceDiagram
     participant C as Capteurs
     participant B as Bracelet ESP32
-    participant M as Broker MQTT Mosquitto
-    participant D as DB PostgreSQL
+    participant A as App Android
     participant DJ as Backend Django
-    participant F as Frontend
+    participant D as DB PostgreSQL
+    participant F as Frontend Webapp
  
     C->>B: Signaux bruts
     B->>B: Traitement embarqué (BPM, SpO2, signes physiologiques)
  
-    alt Publish réussi
-        B->>M: Publish mesures traitées (WiFi)
-        M->>D: Écriture données
+    B->>A: Notification BLE GATT (mesures traitées)
+    A->>A: Affichage local des mesures
+ 
+    alt Envoi réussi
+        A->>DJ: Envoi mesures (API REST, WiFi/4G)
+        DJ->>D: Écriture données
     else Échec réseau
-        B->>B: Mise en buffer local
-        B->>M: Retry publish
+        A->>A: Mise en buffer local
+        A->>DJ: Retry envoi
     end
  
     F->>DJ: Login (authentification)
@@ -163,15 +193,17 @@ Un autre enjeu important concerne l’appairage entre le bracelet et le compte u
 
 ## 7. Solution proposée (a enlever )
 
-La solution retenue repose sur une communication Wi-Fi entre le bracelet et le broker afin d’acheminer les données de manière régulière. Une librairie embarquée traite une partie des mesures localement pour réduire le volume de données envoyées et limiter la fréquence des transmissions.
+La solution retenue repose sur une communication BLE (GATT) entre le bracelet et une application Android afin d'acheminer les données de manière régulière. Une librairie embarquée traite une partie des mesures localement pour réduire le volume de données transmises et limiter la fréquence des envois.
 
-La chaîne de communication est sécurisée et les données sont pseudo-anonymisées. Une webapp, composée d’un backend et d’un frontend, permet ensuite la consultation et la visualisation. Chaque firmware possède également un identifiant unique pour faciliter l’appairage. Une latence de quelques secondes reste acceptable dans ce contexte.
+La chaîne de communication est sécurisée et les données sont pseudo-anonymisées. L'application Android relaie ensuite ces données vers un backend via une API REST, permettant leur stockage et leur mise à disposition. Une webapp, composée d'un backend et d'un frontend, permet la consultation et la visualisation des données, en complément de l'application Android. Chaque firmware possède également un identifiant unique pour faciliter l'appairage BLE avec le téléphone. Une latence de quelques secondes reste acceptable dans ce contexte.
 
-Les choix techniques s’orientent vers un firmware basé pour ESP32, les librairies de traitement embarqués sur esp32, ainsi que le framework Arduino avec PlatformIO.
+Les choix techniques s'orientent vers un firmware basé pour ESP32, les librairies de traitement embarqué sur ESP32, ainsi que le framework Arduino avec PlatformIO. Côté mobile, une application Android implémentée ne Kotlin assure la connexion BLE GATT avec le bracelet, l'affichage local des mesures, ainsi que leur transmission au serveur.
 
-L’infrastructure repose sur une instance broker, un backend en Django et un frontend à définir. Le projet utilise GitHub et GitHub Actions pour l’intégration continue, Docker pour conteneuriser les services et PostgreSQL pour la base de données.
+L'infrastructure repose sur un backend en Django et un frontend en React TypeScript. Le projet utilise GitHub et GitHub Actions pour l'intégration continue, Docker pour conteneuriser les services et PostgreSQL pour la base de données.
 
 Enfin, le protocole de communication entre l’ESP32 et le broker est MQTTS.
+Enfin, le protocole de communication entre le bracelet et l'application Android est BLE GATT, tandis que la communication entre l'application Android et le backend s'effectue via une API REST sécurisée (HTTPS).
+
 
 ## 8. Ce que voit et peut faire l'utilisateur (webapp)
 
@@ -197,10 +229,30 @@ Enfin, le protocole de communication entre l’ESP32 et le broker est MQTTS.
 | [infra-bridge](https://github.com/PDGGRP9/infra-bridge) |test |
 | [landing-page](https://github.com/PDGGRP9/landing-page) |test|
 | [Bracelet_connecte](https://github.com/PDGGRP9/Bracelet_connecte) | abandon - premier repo generals|
+- Changer son mot de passe.
+- Voir en direct son rythme cardiaque, son oxymétrie ainsi que le nombre de pas accumulés chaque jour.
+- Consulter l'historique de ses mesures à travers l'app web/Android sur une temporalité de 24h ou 7 jours.
+- Exporter l'entièreté de ses données en JSON/CSV.
+- Supprimer ses données utilisateur à tout moment.
+
+
+## 9. Collaboration de l'équipe
+
+Le dépôt Github est organisé par domaine fonctionnel.
+
+- `webapp-app-android` : implémentation de l'application Android en Kotlin
+- `hardware` : Documentation technique concernant tous les composants nécessaires à la réalisation du dispositif
+- `webapp-frontend` : Frontend de l'application, écrite en React Typescript
+- `infra-db` : Instanciation de la DB PostgreSQL ainsi que de son schéma
+- `infra-orchestrator` : Orchestration des composants db/frontend/backend et des émetterurs de données pour les tests dans des containers docker
+- `webapp-backend` : Backend de l'application, permettant de faire appel aux routes API de depuis les applications Android et web. Implémentée en Django
+- `firmware/` : code embarqué du bracelet.
+- `infra-broker` (déprecié) : Déploiement du broker pour la connexion et l'envoi de données en wi-fi 
+- `infra-bridge` (déprecié) : Pont entre le broker MQTT et le backend
 
 ### Stratégie de branches
 
-La branche `main` doit rester propre.Chaque nouvelle fonctionnalité passe la création d'une nouvelle branche avant PR. Toute modification passe donc par une pull request et une validation minimale avant fusion. Les branches main ne peuvent pas être protégée sur la version gratuite de Github. La règle est de toujours passer par une PR.
+La branche `main` doit rester propre. Chaque nouvelle fonctionnalité passe la création d'une nouvelle branche avant Pull Request (PR). Toute modification passe donc par une PR et une validation minimale avant fusion. Les branches main ne peuvent uniquement être protégées si la visibilité du projet reste publique. Autrement, la version payante de Github est nécessaire. Nous avons donc pris la décision de toujours passer par une PR.
 
 ### CI/CD
 
@@ -215,7 +267,7 @@ La CI doit vérifier automatiquement un push sur `main` ou sur les pull requests
 
 ### Procésus de développement
 
-#### software (DB, Broker, WebApp)
+#### software (DB, app android, webapp)
 Mode agile avec tableau Kanban à la racine de l'organisation. Création d'issues dans les repos qu'on associe à des Merge Requests et qu'on ajoute dans le tableau Kanban avec les différentes étapes : `Backlog`/`Ready`/`In Progress`/`In Review`/`Done`.
 
 #### firmware
