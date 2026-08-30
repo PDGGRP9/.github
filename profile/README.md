@@ -208,19 +208,26 @@ Enfin, le protocole de communication entre le bracelet et l'application Android 
 ## 8. Ce que voit et peut faire l'utilisateur (webapp)
 
 - Se connecter à son compte.
-- Voir en direct son rythme cardiaque et son oxymétrie et le nombre de pas effectué
-- Consulter l'historique de ses mesures dans le temps.
-- Exporter ses données.
-- Supprimer ses données à tout moment.
+- Voir en direct son rythme cardiaque, son oxymétrie ainsi que le nombre de pas accumulés chaque jour.
+- Consulter l'historique de ses mesures à travers l'app web/Android sur une temporalité de 24h ou 7 jours.
+- Exporter l'entièreté de ses données en JSON/CSV.
+- Supprimer ses données utilisateur à tout moment.
+- Changer son mot de passe.
 
 ## 9. Présentation des repo du projet
 
 | Repo | Description |
 |:-------|:-------------|
-| [firmware](https://github.com/PDGGRP9/firmware) | code embarqué du bracelet.  |
-| [webapp-frontend](https://github.com/PDGGRP9/webapp-frontend) |test|
-| [webapp-backend](https://github.com/PDGGRP9/webapp-backend) |test |
-| [webapp-app-android](https://github.com/PDGGRP9/webapp-app-android) |tes t|
+| [hardware](https://github.com/PDGGRP9/hardware) | Documentation technique concernant tous les composants nécessaires à la réalisation du dispositif|
+| [firmware](https://github.com/PDGGRP9/firmware) | code embarqué du bracelet|
+| [webapp-frontend](https://github.com/PDGGRP9/webapp-frontend) |Frontend de l'application, écrite en React Typescript|
+| [webapp-backend](https://github.com/PDGGRP9/webapp-backend) |Backend de l'application, permettant de faire appel aux routes API de depuis les applications Android et web. Implémentée en Django|
+| [webapp-app-android](https://github.com/PDGGRP9/webapp-app-android) |implémentation de l'application Android en Kotlin|
+
+
+
+| Repo | Description |
+|:-------|:-------------|
 | [gatt-server-emulation]() : |test |
 | [ios-app](https://github.com/PDGGRP9/ios-app) | abandon|
 | [infra-orchestrator](https://github.com/PDGGRP9/ios-ap)  |test|
@@ -229,26 +236,8 @@ Enfin, le protocole de communication entre le bracelet et l'application Android 
 | [infra-bridge](https://github.com/PDGGRP9/infra-bridge) |test |
 | [landing-page](https://github.com/PDGGRP9/landing-page) |test|
 | [Bracelet_connecte](https://github.com/PDGGRP9/Bracelet_connecte) | abandon - premier repo generals|
-- Changer son mot de passe.
-- Voir en direct son rythme cardiaque, son oxymétrie ainsi que le nombre de pas accumulés chaque jour.
-- Consulter l'historique de ses mesures à travers l'app web/Android sur une temporalité de 24h ou 7 jours.
-- Exporter l'entièreté de ses données en JSON/CSV.
-- Supprimer ses données utilisateur à tout moment.
-
 
 ## 9. Collaboration de l'équipe
-
-Le dépôt Github est organisé par domaine fonctionnel.
-
-- `webapp-app-android` : implémentation de l'application Android en Kotlin
-- `hardware` : Documentation technique concernant tous les composants nécessaires à la réalisation du dispositif
-- `webapp-frontend` : Frontend de l'application, écrite en React Typescript
-- `infra-db` : Instanciation de la DB PostgreSQL ainsi que de son schéma
-- `infra-orchestrator` : Orchestration des composants db/frontend/backend et des émetterurs de données pour les tests dans des containers docker
-- `webapp-backend` : Backend de l'application, permettant de faire appel aux routes API de depuis les applications Android et web. Implémentée en Django
-- `firmware/` : code embarqué du bracelet.
-- `infra-broker` (déprecié) : Déploiement du broker pour la connexion et l'envoi de données en wi-fi 
-- `infra-bridge` (déprecié) : Pont entre le broker MQTT et le backend
 
 ### Stratégie de branches
 
