@@ -223,14 +223,14 @@ disponible dans le dépôt [hardware](https://github.com/PDGGRP9/hardware).
 
 ## Fonctionnement technique du produit, étape par étape
 
-1. **Le capteur cardiaque et d'oxymétrie (SEN0344)** mesure le signal brut du flux
-   sanguin au niveau du poignet.
-2. **L'accéléromètre (SEN0142)** détecte les mouvements du bras, ce qui permet de
-   compter les pas et d'aider à distinguer un vrai battement de cœur d'un artefact dû
-   au mouvement.
-3. **La carte ESP32S3** reçoit les données brutes, les traite, calcule le rythme
-   cardiaque (BPM) et la SpO2, et expose régulièrement ce paquet de données via un
-   service BLE GATT. TODO : expliqué la peristance des données ?
+1. **Le capteur cardiaque et d'oxymétrie (SEN0344)** mesure au niveau de la peau le BPM et la SpO2.
+
+2. **L'accéléromètre (SEN0142)** mesure les mouvements du bras.
+
+3. **La carte ESP32S3**  La carte ESP32-S3 lit les capteurs toutes les 4 s : le SEN0344 fournit le BPM et la SpO2 via la librairie DFRobot, l'ESP32 valide ces valeurs et calcule les pas depuis les valeurs de l'accéléromètre, puis expose le paquet via un service BLE GATT.
+
+    Comme le téléphone n'est pas toujours à portée, les mesures sont conservées dans un backlog local (buffer RAM de 32, puis fichier LittleFS circulaire de 200 Ko ≈ 27 h) dont les index survivent au redémarrage grâce à la NVS ; une mesure n'est supprimée qu'après l'ACK de l'application.
+
 4. **L'application Android**, connectée en BLE au bracelet, reçoit ces données, les
    affiche localement à l'utilisateur, et les transmet à un serveur backend via une
    connexion HTTPS.
