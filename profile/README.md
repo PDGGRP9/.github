@@ -12,10 +12,10 @@
 | Page | Description |
 |:-------|:-------------|
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Instructions de contribution au projet |
-| [Déploiement de fonctionnalité](.github/profile/depl_fon.md) | Comment développer et livrer une nouvelle fonctionnalité |
-| [Déploiement en local](.github/profile/depl_local.md) | Comment faire tourner le projet sur sa machine |
+| [DEPLOY_FEATURE.md](DEPLOY_FEATURE.md) | Comment développer et livrer une nouvelle fonctionnalité |
+| [DEPLOY_LOCAL.md](DEPLOY_LOCAL.md) | Comment faire tourner le projet sur sa machine |
 
-> Les deux derniers liens sont à compléter une fois les documents rédigés.
+> TODO : Les deux derniers liens sont à compléter une fois les documents rédigés.
 
 ---
 
@@ -32,7 +32,7 @@
 | [webapp-app-android](https://github.com/PDGGRP9/webapp-app-android) | Documentation de l'application Android, implémentée en Kotlin |
 | [landing-page](https://github.com/PDGGRP9/landing-page) | Landing page et mockups de l'application |
 
-### Dépôts archivés / supprimés
+### Dépôts archivés / supprimés TODO
 
 | Repo | Statut |
 |:-------|:-------------|
@@ -174,12 +174,19 @@ une API REST sécurisée (HTTPS).
 
 ### Limitations connues et pistes d'améliorations
 
-Le projet reste un prototype, et certains points restent à consolider avant un usage réel. Côté software, la persistance des données côté serveur présente encore des cas instables à corriger, et plusieurs briques liées à la gestion de compte manquent encore : un serveur mail pour la réinitialisation du mot de passe, l'authentification à deux facteurs (2FA), et une connexion SSO. 
+Le projet reste un prototype, et certains points restent à consolider avant un usage réel.
 
-***TODO***
-Côté hardware, au-delà du passage au BLE natif déjà évoqué plus haut, d'autres pistes d'amélioration restent à documenter par l'équipe.
+**software**
+La persistance des données côté serveur présente encore des cas instables à corriger, et plusieurs briques liées à la gestion de compte manquent encore : un serveur mail pour la réinitialisation du mot de passe, l'authentification à deux facteurs (2FA), et une connexion SSO. 
 
-### Composition du bracelet
+**hardware**
+Utilisation d'un chip plus adapté à du BLE et passage des calcul du côté du serveur ?
+
+**firmware**
+- Amélioration de la gestion de la batterie en applicant une meilleur gestion des états de veille, nottamment en mettant le device sur pause lorsque l'IMU ne bouge pas ou que le capteur cardiaque retourne des -1 (il n'est donc pas porté...)
+- Amélioration de la mesure sur le capteur cardique, la fenetre est problablemetn trop courte pour avoir des mesures fiables
+
+### Composition du bracelet (TODO : à enlever ? ca alourdit la page, et on devine bien que c'est documenté dans la page hardware ? + les composant sont déjà décrits dans le fonctionnement technique ci dessous !)
 
 | Composant | Fonction dans le produit |
 |-----------|---------------------------|
@@ -212,7 +219,7 @@ disponible dans le dépôt [hardware](https://github.com/PDGGRP9/hardware).
 
 ---
 
-## Fonctionnement du produit, étape par étape
+## Fonctionnement technique du produit, étape par étape
 
 1. **Le capteur cardiaque et d'oxymétrie (SEN0344)** mesure le signal brut du flux
    sanguin au niveau du poignet.
@@ -221,7 +228,7 @@ disponible dans le dépôt [hardware](https://github.com/PDGGRP9/hardware).
    au mouvement.
 3. **La carte ESP32S3** reçoit les données brutes, les traite, calcule le rythme
    cardiaque (BPM) et la SpO2, et expose régulièrement ce paquet de données via un
-   service BLE GATT.
+   service BLE GATT. TODO : expliqué la peristance des données ?
 4. **L'application Android**, connectée en BLE au bracelet, reçoit ces données, les
    affiche localement à l'utilisateur, et les transmet à un serveur backend via une
    connexion HTTPS.
