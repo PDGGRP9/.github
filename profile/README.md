@@ -140,7 +140,7 @@ vis-à-vis du RGPD, tout en permettant un accès simple au site web et à la
 visualisation des données.
 
 Un autre enjeu important concerne l'appairage entre le bracelet et le compte
-utilisateur, puis la transmission des données physiologiques. Puisque c'est l'application Android qui a le rôle de transmettre les données au serveur, il faudra pouvoir garentir que le bracelet ne deviennet pas obsolète en l'absence de connection avec l'app (par exemple en partant courir sans son téléphone) et que les données ainsi récoltées soit transmisent plus tard dans la base de données. Enfin, les données physiologiques doivent être accessibles avec une latence réduite afin de rester utiles pour le suivi en directe via l'application.
+utilisateur, puis la transmission des données physiologiques. Le bracelet peut être utilisé sans que le téléphone soit à proximité — par exemple lors d'une course sans son téléphone. Se pose alors la question de la continuité de la collecte et de l'intégrité des données lorsque le lien avec l'application est interrompu. Enfin, les données physiologiques doivent être accessibles avec une latence réduite afin de rester utiles pour le suivi en directe via l'application.
 
 ### Solution proposée
 
