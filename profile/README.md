@@ -140,7 +140,7 @@ vis-à-vis du RGPD, tout en permettant un accès simple au site web et à la
 visualisation des données.
 
 Un autre enjeu important concerne l'appairage entre le bracelet et le compte
-utilisateur, puis la transmission des données physiologiques. Le bracelet peut être utilisé sans que le téléphone soit à proximité — par exemple lors d'une course sans son téléphone. Se pose alors la question de la continuité de la collecte et de l'intégrité des données lorsque le lien avec l'application est interrompu. Par ailleurs, les données physiologiques doivent être accessibles avec une latence réduite afin de rester utiles pour le suivi en direct via l'application.
+utilisateur, puis la transmission des données physiologiques. Le bracelet peut être utilisé sans que le téléphone soit à proximité, par exemple lors d'une course sans son téléphone. Se pose alors la question de la continuité de la collecte et de l'intégrité des données lorsque le lien avec l'application est interrompu. Par ailleurs, les données physiologiques doivent être accessibles avec une latence réduite afin de rester utiles pour le suivi en direct via l'application.
 
 Et finalement, il faudra correctement gérer l'autonomie du bracelet. Alimenté par une petite batterie, l'ESP32 ne pourra pas tourner à plein régime de manière continue sous peine de la voir s'effondrer.
 
@@ -160,9 +160,11 @@ unique pour faciliter l'appairage BLE avec le téléphone. Une latence de quelqu
 secondes reste acceptable dans ce contexte.
 
 Les choix techniques s'orientent vers un firmware pour ESP32, avec des librairies de
-traitement embarqué et le framework Arduino via PlatformIO. Côté mobile, une
+traitement embarqué et le framework Arduino via PlatformIO. Pour assurer la persistance des données, ces dernières sont sauvegardée en flash, ce qui assure une resistance au arrêt et mise en veille. 
+
+Côté mobile, une
 application Android implémentée en Kotlin assure la connexion BLE GATT avec le
-bracelet, l'affichage local des mesures, ainsi que leur transmission au serveur.
+bracelet, l'affichage local des mesures, ainsi que leur transmission au serveur. À chaque nouvelle connexion, le bracelet synchronise avec l'application toutes les données accumulées pendant la période de déconnexion.
 
 L'infrastructure repose sur un backend en Django et un frontend en React TypeScript.
 Le projet utilise GitHub et GitHub Actions pour l'intégration continue, Docker pour
