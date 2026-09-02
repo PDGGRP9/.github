@@ -221,7 +221,7 @@ disponible dans le dépôt [hardware](https://github.com/PDGGRP9/hardware).
 
 ---
 
-## Fonctionnement technique du produit, étape par étape
+## Fonctionnement technique général du produit
 
 1. **Le capteur cardiaque et d'oxymétrie (SEN0344)** mesure au niveau de la peau le BPM et la SpO2.
 
