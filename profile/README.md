@@ -140,7 +140,9 @@ vis-à-vis du RGPD, tout en permettant un accès simple au site web et à la
 visualisation des données.
 
 Un autre enjeu important concerne l'appairage entre le bracelet et le compte
-utilisateur, puis la transmission des données physiologiques. Le bracelet peut être utilisé sans que le téléphone soit à proximité — par exemple lors d'une course sans son téléphone. Se pose alors la question de la continuité de la collecte et de l'intégrité des données lorsque le lien avec l'application est interrompu. Enfin, les données physiologiques doivent être accessibles avec une latence réduite afin de rester utiles pour le suivi en directe via l'application.
+utilisateur, puis la transmission des données physiologiques. Le bracelet peut être utilisé sans que le téléphone soit à proximité — par exemple lors d'une course sans son téléphone. Se pose alors la question de la continuité de la collecte et de l'intégrité des données lorsque le lien avec l'application est interrompu. Par ailleurs, les données physiologiques doivent être accessibles avec une latence réduite afin de rester utiles pour le suivi en direct via l'application.
+
+Et finalement, il faudra correctement gérer l'autonomie du bracelet. Alimenté par une petite batterie, l'ESP32 ne pourra pas tourner à plein régime de manière continue sous peine de la voir s'effondrer.
 
 ### Solution proposée
 
