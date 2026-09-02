@@ -179,10 +179,10 @@ une API REST sécurisée (HTTPS).
 Le projet reste un prototype, et certains points restent à consolider avant un usage réel.
 
 **software**
-La persistance des données côté serveur présente encore des cas instables à corriger, et plusieurs briques liées à la gestion de compte manquent encore : un serveur mail pour la réinitialisation du mot de passe, l'authentification à deux facteurs (2FA), et une connexion SSO. 
+- La persistance des données côté serveur présente encore des cas instables à corriger, et plusieurs briques liées à la gestion de compte manquent encore : un serveur mail pour la réinitialisation du mot de passe, l'authentification à deux facteurs (2FA), et une connexion SSO. 
 
 **hardware**
-Utilisation d'un chip plus adapté à du BLE et passage des calcul du côté du serveur ?
+- Utilisation d'un chip plus adapté à du BLE et passage des calcul du côté du serveur ?
 
 **firmware**
 - Amélioration de la gestion de la batterie en applicant une meilleur gestion des états de veille, nottamment en mettant le device sur pause lorsque l'IMU ne bouge pas ou que le capteur cardiaque retourne des -1 (il n'est donc pas porté...)
