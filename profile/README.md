@@ -63,7 +63,7 @@ Nous proposons un bracelet connecté **entièrement open source** — matériel,
 backend et applications — avec un déploiement pensé pour rester accessible à des
 particuliers, sans dépendre d'un service propriétaire ni d'un abonnement.
 
-### À qui s'adresse-t-il
+### À qui s'adresse-t-il ?
 
 Toute personne souhaitant suivre ses constantes physiologiques au quotidien (sportifs,
 curieux, profil « quantified self »), sans dépendre d'un matériel propriétaire fermé
