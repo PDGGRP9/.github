@@ -4,8 +4,8 @@ Instructions reproductibles pour faire tourner le projet en local : la DB en Doc
 
 **Table des matières**
 - [Firmware](#firmware)
-- [Backend](#backend)
 - [App Android](#app-android)
+- [Software (Frontend/Backend/DB)](#software-frontendbackenddb)
 
 ## Firmware
 

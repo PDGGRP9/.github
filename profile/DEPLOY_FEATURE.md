@@ -6,8 +6,11 @@ Prendre d'habord des règles général [ici](https://github.com/PDGGRP9/.github/
 
 **Table des matières**
 - [Firmware](#firmware)
-- [Backend](#backend)
 - [App Android](#app-android)
+- [Backend](#backend)
+- [Frontend](#frontend)
+- [Base de données](#base-de-données)
+- [Déploiement effectif (infra-orchestrator)](#déploiement-effectif-infra-orchestrator)
 
 ## Firmware
 
