@@ -40,5 +40,5 @@ Déclenchée sur PR vers `main`, et sur les tags `v*`. Quatre jobs en chaîne :
    git tag v1.2.0 && git push origin v1.2.0
 ```
    Le job `release` produit une release GitHub avec `firmware.bin`.
-6. Flasher les cartes manuellement depuis le binaire de la release. (voir [CONTRIBUTING.md](put the right link !))
+6. Flasher les cartes manuellement depuis le binaire de la release.
 
