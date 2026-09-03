@@ -15,8 +15,6 @@
 | [DEPLOY_FEATURE.md](DEPLOY_FEATURE.md) | Comment développer et livrer une nouvelle fonctionnalité |
 | [DEPLOY_LOCAL.md](DEPLOY_LOCAL.md) | Comment faire tourner le projet sur sa machine |
 
-> TODO : Les deux derniers liens sont à compléter une fois les documents rédigés.
-
 ---
 
 ## Présentation des repos du projet
