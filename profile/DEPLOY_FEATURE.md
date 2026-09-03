@@ -20,25 +20,141 @@ Déclenchée sur PR vers `main`, et sur les tags `v*`. Quatre jobs en chaîne :
 |-----|------|-------------|
 | `test` | Lint (`cppcheck`) + tests natifs | push + PR |
 | `build` | Compile `esp32-s3` et `esp32-s3-ci`, vérifie la taille, publie l'artefact | après `test` |
-| `hardware-test` | Flashe et teste sur l'ESP32-S3 physique | après `build` |
+| `hardware-test` | Flashe et teste sur l'ESP32-S3 physique (local host) | après `build` |
 | `release` | Publie `firmware.bin` en release | tag `v*` |
-  
-### Déployer une fonctionnalité
- 
-1. Développer sur une branche partant de `main`.
-2. Vérifier en local avant de pousser :
+
+### Environnement de développement et commandes du terminal pour le firmware
+
+- Installer l'extension PlatformIO sur vscode :  [PlatformIO](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)
+- ou chercher "PlatformIO IDE" dans les extensions
+
+### Commande dans le terminal
+
 ```bash
-   pio test -e native      # tests logiques
-   pio run -e esp32-s3     # firmware
-   pio run -e esp32-s3-ci  # build sans capteurs
+pio test -e native        # pour les tests logique (fonctions, ...), se fait en local
+pio run -e esp32-s3       # build le firmware (en local)
+pio run -e esp32-s3 -t upload             # build et flash la carte
+pio run -e esp32-s3 -t upload -t monitor  # flash + serial 115200
+pio run -e esp32-s3 -t size               # taille flash/RAM
+pio run -e esp32-s3-ci                    # build "sans capteurs"
+pio device monitor --baud 115200          # voir les logs
+pio check -e esp32-s3 --skip-packages     # cppcheck
+pio run -t clean                          # vide .pio/build
+pio device list
 ```
-   Puis un test manuel sur carte (voir [CONTRIBUTING.md](./CONTRIBUTING.md)).
-3. Ouvrir une PR vers `main` — merge possible seulement si la CI est verte.
-4. Merger : `test`, `build` et `hardware-test` rejouent, cette fois avec le test sur carte physique.
-5. Publier une version (optionnel) :
+
+### Adaptation des capteurs
+Il y a des environnement dans le fichier platformio.ini
+- `esp32-s3` environnement de dev pour les capteurs, il faut les activer !
+- `esp32-s3-ci` n'active presque rien -> il permet de tester le bluetouth quand même !
+- `native` ne compile aucun code matériel
+
+Pour prendre en compte un capteur, il faut faire #ifdef
+```CPP
+#ifdef HAS_IMU
+  #include "imu.h"
+  IMU imu;
+#endif
+
+void setup() {
+#ifdef HAS_BLUETOOTH
+    bluetooth_init();
+#endif
+#ifdef HAS_IMU
+    imu.begin();
+#endif
+}
+
+void loop() {
+#ifdef HAS_IMU
+    float accel = imu.readAccel();
+#endif
+}
+```
+
+### Ajouter une librairie
+
+Exemple concret : ajouter l'oxymètre SEN0344 (lib `DFRobot_BloodOxygen_S`).
+
+**1. Déclarer la lib — dans le bon env**
+
+Dans `platformio.ini`, sous `[env:esp32-s3]`
+
+```ini
+[env:esp32-s3]
+board = seeed_xiao_esp32s3
+lib_deps =
+    dfrobot/DFRobot_BloodOxygen_S
+build_flags =
+    -D ARDUINO_USB_CDC_ON_BOOT=1
+    -D HAS_BLUETOOTH
+    -D HAS_IMU
+    -D HAS_OXYGEN      ; <- ton nouveau flag
+```
+
+Pourquoi pas sous `[env]` : `[env]` s'applique aussi à `native`, qui compile sur
+PC.
+
+**2. Protéger le code par un flag**
+
+Tout ce qui touche le capteur va derrière `#ifdef` — sinon la CI (`esp32-s3-ci`,
+sans capteurs) et le esp32 qui n'a pas le module ne compilent plus :
+
+```cpp
+#ifdef HAS_OXYGEN
+  #include "sensors/oximeter.h"
+  Oximeter oxy;
+#endif
+
+void setup() {
+#ifdef HAS_OXYGEN
+    oxy.begin();
+#endif
+}
+```
+
+**3. Vérifier avant de push — les 3 envs**
+
 ```bash
-   git tag v1.2.0 && git push origin v1.2.0
+pio test -e native        # le code portable compile toujours
+pio run -e esp32-s3-ci    # le build "sans capteurs" compile toujours
+pio run -e esp32-s3       # ton build avec le capteur compile
 ```
-   Le job `release` produit une release GitHub avec `firmware.bin`.
-6. Flasher les cartes manuellement depuis le binaire de la release.
+
+Si un des trois casse, c'est que la lib ou le `#include` a fuité hors du `#ifdef`.
+
+**Cas particulier : lib de logique pure (pas de matériel)**
+
+Si le code n'utilise pas Arduino, ajoute aussi le fichier au filtre natif pour
+qu'il soit testé par la CI :
+
+```ini
+[env:native]
+build_src_filter = +<message.cpp> +<logic/mon_fichier.cpp>
+```
+
+### Secrets
+Les logins sont dans le fichier `include/secrets.h`. Ne pas le commiter !
+
+### workflow pour un push
+
+```bash
+pio test -e native      # 1. les tests logiques passent
+pio run -e esp32-s3     # 2. le firmware compile bien
+pio run -e esp32-s3-ci  # 3.le build "sans capteurs" compile toujours
+<TEST MANUEL>           # 4. test sur carte de bout-en-bout
+git push                # 5. la CI prend le relais (build + test sur carte)
+```
+
+### Environnement de dev sans capteurs
+
+Utilise l'env esp32-s3-ci qui ne prends pas en compte les capteurs.
+
+```
+pio test -e native      # pour les tests logique (fonctions, ...), se fait en local
+pio run -e esp32-s3-ci  # build le firmware (en local)
+pio run -e esp32-s3-ci -t upload  # build et flash la carte
+pio device monitor --baud 115200  # voir les logs
+```
+
 
