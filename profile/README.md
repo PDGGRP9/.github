@@ -32,17 +32,15 @@
 | [webapp-app-android](https://github.com/PDGGRP9/webapp-app-android) | Documentation de l'application Android, implémentée en Kotlin |
 | [landing-page](https://github.com/PDGGRP9/landing-page) | Landing page et mockups de l'application |
 
-### Dépôts archivés / supprimés TODO
+### Dépôts archivés
 
 | Repo | Statut |
 |:-------|:-------------|
-| [gatt-server-emulation]() | Déprécié |
-| [ios-app](https://github.com/PDGGRP9/ios-app) | Supprimé |
+| [ios-app](https://github.com/PDGGRP9/ios-app) | Déprécié |
 | [infra-orchestrator](https://github.com/PDGGRP9/infra-orchestrator) | Déprécié |
 | [infra-db](https://github.com/PDGGRP9/infra-db) | Déprécié |
 | [infra-broker](https://github.com/PDGGRP9/infra-broker) | Déprécié |
 | [infra-bridge](https://github.com/PDGGRP9/infra-bridge) | Déprécié |
-| [Bracelet_connecte](https://github.com/PDGGRP9/Bracelet_connecte) | Supprimé — premier repo général du projet |
 
 ---
 
