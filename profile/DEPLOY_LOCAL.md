@@ -41,8 +41,8 @@ Téléchargez la dernière release : [bracelet-connecte-0.3.2.apk](https://githu
 1. Sur le téléphone, ouvrir le fichier `.apk` (via la notification de téléchargement ou un gestionnaire de fichiers).
 2. À la première installation, Android bloque l'APK et propose d'autoriser la source : suivre l'invite, activer l'autorisation, puis revenir en arrière.
    > La procédure d'autorisation peut varier selon le modèle de téléphone et d'Android
+   > chercher un bouton qui dit "Installer quand même"
 3. Confirmer l'installation, puis ouvrir l'application. 
-4. Confirmer l'installation, puis ouvrir l'application.
 
 **Depuis un ordinateur :** 
 télécharger le fichier, puis le transférer sur le téléphone par l'un de ces moyens :
