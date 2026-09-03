@@ -2,6 +2,11 @@
 
 Instructions reproductibles pour faire tourner le projet en local : la DB en Docker, l'app Android, et le firmware sur une carte ESP32.
 
+**Table des matières**
+- [Firmware](#firmware)
+- [Backend](#backend)
+- [App Android](#app-android)
+
 ## Firmware
 
 Le firmware se lance en le flashant sur une carte ESP32-S3. Si le bracelet est déja monté, il suffit de le connecté via le port usb-c.
