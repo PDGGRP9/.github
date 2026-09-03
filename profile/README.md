@@ -174,6 +174,9 @@ Le protocole de communication entre le bracelet et l'application Android est BLE
 tandis que la communication entre l'application Android et le backend s'effectue via
 une API REST sécurisée (HTTPS).
 
+La liste détaillée des composants, des schémas et de la modélisation du dispositif est
+disponible dans le dépôt [hardware](https://github.com/PDGGRP9/hardware).
+
 ### Limitations connues et pistes d'améliorations
 
 Le projet reste un prototype, et certains points restent à consolider avant un usage réel.
@@ -187,38 +190,6 @@ Le projet reste un prototype, et certains points restent à consolider avant un 
 **firmware**
 - Amélioration de la gestion de la batterie en applicant une meilleur gestion des états de veille, nottamment en mettant le device sur pause lorsque l'IMU ne bouge pas ou que le capteur cardiaque retourne des -1 (il n'est donc pas porté...)
 - Amélioration de la mesure sur le capteur cardique, la fenetre est problablemetn trop courte pour avoir des mesures fiables
-
-### Composition du bracelet (TODO : à enlever ? ca alourdit la page, et on devine bien que c'est documenté dans la page hardware ? + les composant sont déjà décrits dans le fonctionnement technique ci dessous !)
-
-| Composant | Fonction dans le produit |
-|-----------|---------------------------|
-| **XIAO ESP32S3** | Cerveau du bracelet : lit les capteurs, traite le signal et envoie les données en BLE |
-| **SEN0344 (DFRobot)** | Capteur optique posé contre la peau du poignet, utilisé pour mesurer le rythme cardiaque et l'oxymétrie (SpO2) |
-| **SEN0142 (DFRobot)** | Accéléromètre, détecte les mouvements du poignet pour le comptage de pas |
-| **Batterie Lipo** | Alimentation autonome du bracelet |
-| **Bouton poussoir** | Mise en veille et allumage du dispositif |
-| **LED** | Indicateur visuel d'état |
-
-La liste détaillée des composants, des schémas et de la modélisation du dispositif est
-disponible dans le dépôt [hardware](https://github.com/PDGGRP9/hardware).
-
-> **Note sur le choix de connectivité :** Dans un premier temps, le Wi-Fi a été retenu
-> pour cette version du prototype car il s'agit d'une technologie plus simple à mettre
-> en place, nécessitant moins de connaissances spécifiques et facilitant l'intégration
-> avec le broker et la webapp. Ce choix a notamment permis de limiter la complexité de
-> développement dans le cadre du temps imparti au projet, une solution BLE ayant
-> initialement semblé demander un développement d'application Android trop conséquent
-> pour être réalisé dans les délais.
->
-> Finalement, compte tenu du temps disponible, nous avons pu implémenter une
-> application Android se connectant en BLE GATT, avec un affichage des données à la
-> fois via l'application Android et via la webapp.
->
-> Pour un usage réel en tant que bracelet porté au quotidien, le BLE reste néanmoins
-> la technologie la plus adaptée : elle consomme beaucoup moins d'énergie que le
-> Wi-Fi, ce qui permettrait d'augmenter significativement l'autonomie de la batterie,
-> un critère que nous avons jugé essentiel pour un dispositif porté en continu.
-
 ---
 
 ## Fonctionnement technique général du produit
@@ -239,6 +210,23 @@ disponible dans le dépôt [hardware](https://github.com/PDGGRP9/hardware).
 6. **La webapp et l'application Android**, connectées au même backend, affichent à
    l'utilisateur, en quasi temps réel, son rythme cardiaque, son oxymétrie et son
    nombre de pas, avec la possibilité de consulter l'historique.
+
+> **Note sur le choix de connectivité :** Dans un premier temps, le Wi-Fi a été retenu
+> pour cette version du prototype car il s'agit d'une technologie plus simple à mettre
+> en place, nécessitant moins de connaissances spécifiques et facilitant l'intégration
+> avec le broker et la webapp. Ce choix a notamment permis de limiter la complexité de
+> développement dans le cadre du temps imparti au projet, une solution BLE ayant
+> initialement semblé demander un développement d'application Android trop conséquent
+> pour être réalisé dans les délais.
+>
+> Finalement, compte tenu du temps disponible, nous avons pu implémenter une
+> application Android se connectant en BLE GATT, avec un affichage des données à la
+> fois via l'application Android et via la webapp.
+>
+> Pour un usage réel en tant que bracelet porté au quotidien, le BLE reste néanmoins
+> la technologie la plus adaptée : elle consomme beaucoup moins d'énergie que le
+> Wi-Fi, ce qui permettrait d'augmenter significativement l'autonomie de la batterie,
+> un critère que nous avons jugé essentiel pour un dispositif porté en continu.
 
 ---
 
