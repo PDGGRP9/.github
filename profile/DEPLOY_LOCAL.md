@@ -53,23 +53,57 @@ Cette partie explique comment faire tourner l'ensemble du projet (base de donné
 ### Prérequis
 
 - [Docker](https://www.docker.com/) et Docker Compose installés.
+- Les images `ghcr.io/pdggrp9/*` doivent être accessibles. Si elles sont privées, se logger une fois :
+  ```bash
+  echo <TOKEN_GITHUB> | docker login ghcr.io -u <user-github> --password-stdin
+  ```
+  (le token doit avoir le scope `read:packages`)
 
-### Lancer les services
+### Récupérer le repo
 
-Le repository [infra-orchestrator](https://github.com/PDGGRP9/infra-orchestrator) orchestre tous les services (DB, backend, frontend) à partir des images publiées sur `ghcr.io` : inutile de cloner les autres repos pour un simple lancement.
+Le repository [infra-orchestrator](https://github.com/PDGGRP9/infra-orchestrator) orchestre tous les services (DB, backend, frontend, Caddy) à partir des images publiées sur `ghcr.io` : inutile de cloner les autres repos pour un simple lancement.
 
 ```bash
 git clone https://github.com/PDGGRP9/infra-orchestrator.git
 cd infra-orchestrator
+```
+
+### Configurer le `.env`
+
+Le `docker-compose.yml` est celui de la **prod** (HTTPS servi par Caddy). Deux variables sont **obligatoires** — `SITE_DOMAIN` et `ACME_EMAIL` — et `docker compose up` échoue tant qu'elles ne sont pas définies. Pour un lancement local, on copie l'exemple et on pointe sur `localhost` :
+
+```bash
+cp .env.example .env
+```
+
+Puis éditer `.env`. Pour du local, seules ces deux lignes sont à adapter :
+
+```bash
+SITE_DOMAIN=localhost         # Caddy émet un certificat via sa CA locale, sans Let's Encrypt
+ACME_EMAIL=dev@example.com    # non utilisé avec localhost, mais la variable doit exister
+```
+
+Toutes les autres variables (`POSTGRES_*`, `DJANGO_SECRET_KEY`, tags d'images, `DEBUG`…) ont une valeur par défaut qui convient en local : les laisser telles quelles, ou les surcharger dans `.env` au besoin. Le fichier `.env` est dans `.gitignore`, il n'est jamais commité.
+
+### Lancer les services
+
+```bash
 docker compose up -d
 ```
 
-Un `fake-emitter` envoie automatiquement des mesures factices toutes les 5 secondes, pour avoir des données à afficher sans bracelet physique.
+Un `fake-emitter` envoie automatiquement des mesures factices toutes les 5 secondes, pour avoir des données à afficher sans bracelet physique. Le désactiver avec `docker compose up -d --scale fake-emitter=0`.
 
 ### Accéder aux services
 
+Tout passe par Caddy en HTTPS : le frontend et le backend ne sont pas publiés sur des ports séparés.
+
 | Service | URL |
 |---|---|
-| Frontend | http://localhost:3000 |
-| Backend (API) | http://localhost:8000 |
-| PostgreSQL | `localhost:5432` |
+| Application (frontend + API) | https://localhost |
+| API backend | https://localhost/api/ |
+| PostgreSQL | `localhost:5432` (user `bracelet` / mdp `bracelet` / db `bracelet_connecte`, ou les valeurs mises dans `.env`) |
+
+> À la première visite, le navigateur affiche un avertissement de sécurité : le certificat vient de la CA locale de Caddy, pas d'une autorité publique. L'accepter pour continuer. Pour le supprimer, importer la CA racine de Caddy dans le trousseau du système :
+> ```bash
+> docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
+> ```
