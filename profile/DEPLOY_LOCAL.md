@@ -47,7 +47,7 @@ Téléchargez la dernière release : [bracelet-connecte-0.3.2.apk](https://githu
 **Depuis un ordinateur :** 
 télécharger le fichier, puis le transférer sur le téléphone par l'un de ces moyens :
 - Câble USB : brancher le téléphone, l'autoriser en tant que transfert de fichiers, puis copier l'APK (p. ex. dans `Download`).
-- Cloud / e-mail : s'envoyer le fichier (Drive, e-mail, etc.) et l'ouvrir depuis le téléphone.
+- Cloud / e-mail / whats'app : s'envoyer le fichier (Drive, e-mail, etc.) et l'ouvrir depuis le téléphone.
 
 Puis reprendre la procédure vu ci-dessus (depuis le téléphone).
 
