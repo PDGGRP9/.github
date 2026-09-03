@@ -200,7 +200,7 @@ dependencies {
 Pas de coordonnées Maven écrites en dur dans `build.gradle.kts`. Attention si tu touches à
 la version de Kotlin : celle de KSP doit la suivre (`1.9.24` ↔ `1.9.24-1.0.20`).
 
-### Écrire un test (TODO : et donc ? rien de pratique ici !!)
+### Écrire un test
 
 1. **Sortir la logique du composable et du ViewModel**, dans une fonction ou un `object`
    sans dépendance Android : elle ne prend que des types Kotlin et `java.time`, et retourne
