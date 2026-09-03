@@ -2,6 +2,8 @@
  
 Procédure reproductible pour intégrer et déployer une fonctionnalité via la pipeline CI/CD.
 
+Prendre d'habord des règles général [ici](https://github.com/PDGGRP9/.github/blob/main/profile/CONTRIBUTING.md) 
+
 **Table des matières**
 - [Firmware](#firmware)
 - [Backend](#backend)
@@ -162,4 +164,97 @@ pio run -e esp32-s3-ci -t upload  # build et flash la carte
 pio device monitor --baud 115200  # voir les logs
 ```
 
+## App Android
 
+Il n'y a pas de déploiement sur le Play Store. La distribution se fait en téléchargeant
+l'APK depuis la release et en l'installant à la main sur le téléphone.
+
+### Environnement de développement
+
+- Android Studio, avec le SDK Android 34 et un JDK 17.
+- `local.properties` est généré par Android Studio et contient le chemin du SDK.
+- Pour tester : un téléphone physique dès que la fonctionnalité touche au Bluetooth,
+  l'émulateur n'ayant pas de BLE. Sinon un émulateur API ≥ 26 suffit.
+
+### Ajouter un appel API
+
+1. Déclarer le DTO `@Serializable` dans `data/api/dto/`.
+2. Ajouter la méthode dans `data/api/WebappApiService.kt`.
+3. L'appeler depuis un repository (`data/measurements/`, `data/auth/`, …) et non depuis un
+   composable.
+
+Le header `Authorization: Bearer …` est déjà posé par `data/api/AuthInterceptor.kt`, inutile
+de le remettre. L'URL de base ne se code pas en dur non plus : `ApiClientProvider` conserve
+un client Retrofit par URL, et l'URL courante vient de la session.
+
+### Ajouter une dépendance
+
+Les versions sont centralisées dans `gradle/libs.versions.toml`. Déclarer la version et
+l'alias là-bas, puis dans `app/build.gradle.kts` :
+
+```kotlin
+dependencies {
+    implementation(libs.mon.alias)
+}
+```
+Pas de coordonnées Maven écrites en dur dans `build.gradle.kts`. Attention si tu touches à
+la version de Kotlin : celle de KSP doit la suivre (`1.9.24` ↔ `1.9.24-1.0.20`).
+
+### Écrire un test (TODO : et donc ? rien de pratique ici !!)
+
+1. **Sortir la logique du composable et du ViewModel**, dans une fonction ou un `object`
+   sans dépendance Android : elle ne prend que des types Kotlin et `java.time`, et retourne
+   un résultat. C'est ce qu'ont fait `presentation/stats/StatsMath.kt` pour les courbes et
+   `domain/BraceletMeasurementCodec.kt` pour le décodage des trames.
+2. **Créer le fichier de test** dans `app/src/test/java/com/pdg/braceletconnecte/`, en
+   miroir du package testé, nommé `<ClasseTestée>Test.kt`.
+3. **Écrire les cas** en JUnit 4 : une méthode par comportement, nommée en backticks pour
+   qu'elle se lise en anglais dans le rapport.
+
+### Ce que la pipeline ne vérifie pas
+
+Le smoke-test confirme uniquement que l'app se lance sans crasher sur un émulateur. Le
+Bluetooth, les permissions runtime et le rendu Compose sont à vérifier avant de faire une PR :
+
+- scan et connexion au bracelet, puis reconnexion après avoir coupé le Bluetooth ;
+- réception d'une mesure et affichage dans le Dashboard ;
+- coupure réseau : les mesures doivent être mises en file dans Room, puis remontées au
+  retour du réseau ;
+- login, logout, accès invité ;
+- Dashboard et Stats sur un jeu de données non vide.
+
+### Commandes dans le terminal (todo : qu'est ce qui est vraiment utiliser sur la cicd ? a regrouper dans le workflow avant un push !)
+
+Commandes lancées par le CI. Les rejouer en local avant de pousser est la seule façon de voir un lint ou un test rouge sans attendre le retour de la PR :
+
+### Workflow pour une PR
+
+La CI ne lance que trois commandes Gradle, dans cet ordre, et échoue à la première qui
+casse. Les rejouer en local est la seule façon de voir un lint ou un test rouge sans
+attendre le retour de la PR :
+
+```bash
+./gradlew lintDebug           # 1. Android Lint : une seule erreur suffit à casser le job
+./gradlew testDebugUnitTest   # 2. tests unitaires JVM ; rapport dans app/build/reports/tests/
+./gradlew assembleDebug       # 3. build de l'APK, dans un job séparé qui suit les deux autres
+```
+
+Le reste, la CI ne le vérifie pas. Le smoke-test du CD confirme seulement que l'app démarre,
+donc le test manuel sur un vrai téléphone est à faire, d'autant que l'émulateur n'a pas de BLE :
+
+```bash
+adb devices                                  # le téléphone répond ? sinon débogage USB coupé
+./gradlew installDebug                       # build + installe : la boucle la plus rapide pour itérer
+adb logcat | grep com.pdg.braceletconnecte   # les logs de l'app, seul moyen de suivre BLE et réseau
+```
+
+### Publier une version
+Selon les règles générales : [ici](https://github.com/PDGGRP9/.github/blob/main/profile/CONTRIBUTING.md) 
+
+Une fois la PR mergée dans `main` :
+
+```bash
+git checkout main && git pull
+git tag 0.3.3
+git push origin 0.3.3
+```
