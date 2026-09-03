@@ -26,11 +26,6 @@ pio run -e esp32-s3 -t upload   # build + flash
 
 ## App Android
 
-L'app Android peut être installée directement via l'APK fourni.
-
-### Installer l'APK
-## App Android
-
 L'app Android s'installe directement via l'APK fourni. L'installation se fait toujours sur le téléphone ; depuis un ordinateur, il faut d'abord transférer le fichier.
 
 ### Récupérer l'APK
