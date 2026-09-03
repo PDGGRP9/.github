@@ -223,13 +223,9 @@ Bluetooth, les permissions runtime et le rendu Compose sont à vérifier avant d
 - login, logout, accès invité ;
 - Dashboard et Stats sur un jeu de données non vide.
 
-### Commandes dans le terminal (todo : qu'est ce qui est vraiment utiliser sur la cicd ? a regrouper dans le workflow avant un push !)
-
-Commandes lancées par le CI. Les rejouer en local avant de pousser est la seule façon de voir un lint ou un test rouge sans attendre le retour de la PR :
-
 ### Workflow pour une PR
 
-La CI ne lance que trois commandes Gradle, dans cet ordre, et échoue à la première qui
+La CI ne lance des commandes Gradle, et échoue à la première qui
 casse. Les rejouer en local est la seule façon de voir un lint ou un test rouge sans
 attendre le retour de la PR :
 
