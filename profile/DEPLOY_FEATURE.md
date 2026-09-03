@@ -2,6 +2,11 @@
  
 Procédure reproductible pour intégrer et déployer une fonctionnalité via la pipeline CI/CD.
 
+**Table des matières**
+- [Firmware](#firmware)
+- [Backend](#backend)
+- [App Android](#app-android)
+
 ## Firmware
 
 Le firmware ne fait pas de CD. On ne peut pas flasher à distance les ESP32 déjà en circulation.
