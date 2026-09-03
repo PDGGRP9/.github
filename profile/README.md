@@ -29,6 +29,8 @@
 | [firmware](https://github.com/PDGGRP9/firmware) | Documentation du code embarqué du bracelet |
 | [webapp-frontend](https://github.com/PDGGRP9/webapp-frontend) | Documentation du frontend de l'application, écrite en React TypeScript |
 | [webapp-backend](https://github.com/PDGGRP9/webapp-backend) | Documentation du backend de l'application, exposant les routes API consommées par les applications Android et web. Implémenté en Django |
+| [infra-orchestrator](https://github.com/PDGGRP9/infra-orchestrator) | Responsable du déploiement du Frontend, Backend et le SGDB PostGreSQL dans des containers Docker |
+| [infra-db](https://github.com/PDGGRP9/infra-db) | Détermine le schéma de notre base de données |
 | [webapp-app-android](https://github.com/PDGGRP9/webapp-app-android) | Documentation de l'application Android, implémentée en Kotlin |
 | [landing-page](https://github.com/PDGGRP9/landing-page) | Landing page et mockups de l'application |
 
@@ -37,8 +39,6 @@
 | Repo | Statut |
 |:-------|:-------------|
 | [ios-app](https://github.com/PDGGRP9/ios-app) | Déprécié |
-| [infra-orchestrator](https://github.com/PDGGRP9/infra-orchestrator) | Déprécié |
-| [infra-db](https://github.com/PDGGRP9/infra-db) | Déprécié |
 | [infra-broker](https://github.com/PDGGRP9/infra-broker) | Déprécié |
 | [infra-bridge](https://github.com/PDGGRP9/infra-bridge) | Déprécié |
 

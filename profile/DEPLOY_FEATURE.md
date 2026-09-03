@@ -254,3 +254,79 @@ git checkout main && git pull
 git tag 0.3.3
 git push origin 0.3.3
 ```
+
+## Backend
+
+Le [webapp-backend](https://github.com/PDGGRP9/webapp-backend) (Django) a une CI (tests + build, sur push/PR) et une CD (publication de l'image sur GHCR, sur tag). Rien à configurer en local, pas de secret nécessaire.
+
+### Développement local
+
+```bash
+cd webapp-backend
+python3 -m pip install -r requirements.txt   # ou ./setup.sh pour un venv
+python3 manage.py test
+python3 manage.py runserver 0.0.0.0:8000
+```
+
+⚠️ Sans `DB_HOST`/`DB_NAME`/`DB_USER`/`DB_PASSWORD`, Django utilise SQLite qui n'est pasle vrai schéma. Celui-ci présent se situe dans `infra-db`, pas dans des migrations Django (`api/migrations` est vide, l'app fait du SQL brut). Pour tester contre le vrai schéma, pointer `DB_HOST` sur une instance `infra-db` locale.
+
+### Livrer
+
+```bash
+python3 manage.py test && git push        # CI : rejoue les tests + build
+git tag 1.4.0 && git push origin 1.4.0    # CD : publie l'image sur GHCR
+```
+
+## Frontend
+
+Le [webapp-frontend](https://github.com/PDGGRP9/webapp-frontend) (React + Vite + TypeScript) suit le même schéma CI/CD que le backend.
+
+### Développement local
+
+```bash
+cd webapp-frontend
+npm install
+npm run dev   # http://localhost:5173
+npm run lint && npm run test && npm run build
+```
+
+L'URL du backend n'est pas fixée au build : elle se saisit dans le formulaire de connexion et est mémorisée en `localStorage` (`http://localhost:8000` par défaut).
+
+### Livrer
+
+```bash
+git push                                  # CI : lint + test + build
+git tag 1.4.0 && git push origin 1.4.0    # CD : publie l'image sur GHCR
+```
+
+## Base de données
+
+Le [infra-db](https://github.com/PDGGRP9/infra-db) publie une image Postgres 16 pré-initialisée. Le schéma applicatif est ici(`webapp-backend/api/migrations` est vide, le backend fait du SQL brut). Toute évolution de schéma pour une feature se fait dans `initdb/001-schema.sql` (données de démo dans `initdb/002-seed.sql`).
+
+⚠️ Ces scripts ne s'exécutent qu'à la création du volume Postgres. Modifier le schéma n'a aucun effet sur une instance déjà initialisée, il faut repartir d'un volume vide :
+
+```bash
+cd infra-db
+docker compose down
+rm -rf data
+docker compose up -d --build
+```
+
+### Livrer
+
+```bash
+git push                                  # CI : build l'image
+git tag 1.4.0 && git push origin 1.4.0    # CD : publie + signe l'image sur GHCR
+```
+
+## Déploiement effectif (infra-orchestrator)
+
+Publier une image sur GHCR ne déploie rien tout seul. La prod tourne via [infra-orchestrator](https://github.com/PDGGRP9/infra-orchestrator), qui pull les images (voir [DEPLOY_LOCAL.md](./DEPLOY_LOCAL.md)).
+
+⚠️ Les images ne sont jamais republiées en `latest` : après une release, fixer la variable d'image correspondante avant de pull, sinon rien de neuf n'est récupéré :
+
+```bash
+export WEBAPP_BACKEND_IMAGE=ghcr.io/pdggrp9/webapp-backend:1.4.0   # idem pour le frontend / la db si concernés
+docker compose pull && docker compose up -d
+```
+

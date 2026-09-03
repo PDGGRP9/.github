@@ -51,3 +51,30 @@ télécharger le fichier, puis le transférer sur le téléphone par l'un de ces
 
 Puis reprendre la procédure vu ci-dessus (depuis le téléphone).
 
+## Software (Frontend/Backend/DB)
+
+Cette partie explique comment faire tourner l'ensemble du projet (base de données, backend, frontend) sur votre machine, à l'aide de Docker. Il n'est pas nécessaire d'installer quelconque librairie Node, Python ou PostgreSQL.
+
+### Prérequis
+
+- [Docker](https://www.docker.com/) et Docker Compose installés.
+
+### Lancer les services
+
+Le repository [infra-orchestrator](https://github.com/PDGGRP9/infra-orchestrator) orchestre tous les services (DB, backend, frontend) à partir des images publiées sur `ghcr.io` : inutile de cloner les autres repos pour un simple lancement.
+
+```bash
+git clone https://github.com/PDGGRP9/infra-orchestrator.git
+cd infra-orchestrator
+docker compose up -d
+```
+
+Un `fake-emitter` envoie automatiquement des mesures factices toutes les 5 secondes, pour avoir des données à afficher sans bracelet physique.
+
+### Accéder aux services
+
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:3000 |
+| Backend (API) | http://localhost:8000 |
+| PostgreSQL | `localhost:5432` |
